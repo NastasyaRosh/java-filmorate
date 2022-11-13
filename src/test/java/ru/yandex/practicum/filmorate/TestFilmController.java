@@ -13,31 +13,30 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TestFilmController {
     private FilmController filmController;
+    private Film film;
 
     @BeforeEach
     public void beforeEach() {
         filmController = new FilmController();
+        film = Film.builder().name("Фильм").description("Верные данные.").releaseDate(LocalDate.now()).duration(90).build();
     }
 
     @Test
     public void errorValidation() {
-        Film withFalseDate = Film.builder().name("Фильм").description("Ложная дата.").releaseDate(LocalDate.of(1895, 12, 27)).duration(90).build();
+        film.setReleaseDate(LocalDate.of(1895, 12, 27));
 
-        assertThrows(ValidationException.class, () -> filmController.addFilm(withFalseDate), "Должно быть возвращено исключение.");
+        assertThrows(ValidationException.class, () -> filmController.addFilm(film), "Должно быть возвращено исключение.");
     }
 
     @Test
     public void notExist() {
-        Film withFalseID = Film.builder().id(1).name("Фильм").description("Несуществующее ID.").releaseDate(LocalDate.now()).duration(90).build();
+        film.setId(1);
 
-        assertThrows(FilmOrUserNotExist.class, () -> filmController.updateFilm(withFalseID), "Должно быть возвращено исключение.");
+        assertThrows(FilmOrUserNotExist.class, () -> filmController.updateFilm(film), "Должно быть возвращено исключение.");
     }
 
     @Test
     public void rightValidation() {
-        Film requestFilm = Film.builder().name("Фильм").description("Верные данные.").releaseDate(LocalDate.now()).duration(90).build();
-        Film responseFilm = filmController.addFilm(requestFilm);
-
-        assertEquals(responseFilm, requestFilm, "Добавлен не верный фильм.");
+       assertEquals(filmController.addFilm(film), film, "Добавлен не верный фильм.");
     }
 }

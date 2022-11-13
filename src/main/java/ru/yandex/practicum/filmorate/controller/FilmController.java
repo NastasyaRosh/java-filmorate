@@ -10,19 +10,34 @@ import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
-    final LocalDate firstFilm = LocalDate.of(1895, 12, 28);
-    private HashMap<Integer, Film> films = new HashMap<>();
+    public static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 28);
+    private Map<Integer, Film> films = new HashMap<>();
 
     private int id = 0;
 
     private int setId(Film film) {
         film.setId(++this.id);
         return this.id;
+    }
+
+    private void validate(Film film) {
+        if (film.getReleaseDate().isBefore(FIRST_FILM)) {
+            log.warn("Введенный фильм не прошел валидацию.");
+            throw new ValidationException("Неверная дата создания фильма.");
+        }
+    }
+
+    private void checkExist(Film film) throws FilmOrUserNotExist {
+        if (!(films.containsKey(film.getId()))) {
+            log.warn("Введен неверный ID.");
+            throw new FilmOrUserNotExist("Фильма с таким ID не существует.");
+        }
     }
 
     @GetMapping
@@ -33,28 +48,18 @@ public class FilmController {
 
     @PostMapping
     public Film addFilm(@Valid @RequestBody Film film) {
-            if (film.getReleaseDate().isBefore(firstFilm)) {
-                log.warn("Введенный фильм не прошел валидацию.");
-                throw new ValidationException("Неверная дата создания фильма.");
-            } else {
-                films.put(setId(film), film);
-                log.debug("Создан новый фильм с ID:" + film.getId());
-            }
+        validate(film);
+        films.put(setId(film), film);
+        log.debug("Создан новый фильм с ID:" + film.getId());
         return films.get(film.getId());
     }
 
     @PutMapping
     public Film updateFilm(@Valid @RequestBody Film film) throws FilmOrUserNotExist {
-            if (film.getReleaseDate().isBefore(firstFilm)) {
-                log.warn("Введенный фильм не прошел валидацию.");
-                throw new ValidationException("Неверная дата создания фильма.");
-            } else if (!(films.containsKey(film.getId()))) {
-                log.warn("Введен неверный ID.");
-                throw new FilmOrUserNotExist("Фильма с таким ID не существует.");
-            } else {
-            films.replace(film.getId(), film);
-            log.debug(String.format("Фильм с ID = %d обновлен.", film.getId()));
-            }
+        validate(film);
+        checkExist(film);
+        films.replace(film.getId(), film);
+        log.debug(String.format("Фильм с ID = %d обновлен.", film.getId()));
         return films.get(film.getId());
     }
 
