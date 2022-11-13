@@ -13,33 +13,33 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class TestUserController {
     private UserController userController;
+    private User user;
 
     @BeforeEach
     public void beforeEach() {
         userController = new UserController();
+        user = User.builder().email("mail@mail.com").login("login").name("name").birthday(LocalDate.of(1990, 1, 1)).build();
     }
 
     @Test
     public void notExist() {
-        User userWithFalseId = User.builder().id(1).email("mail@mail.com").login("login").name("name").birthday(LocalDate.of(1990, 1,1)).build();
+        user.setId(1);
 
-        assertThrows(FilmOrUserNotExist.class, () -> userController.updateUser(userWithFalseId), "Должно быть возвращено исключение.");
+        assertThrows(FilmOrUserNotExist.class, () -> userController.updateUser(user), "Должно быть возвращено исключение.");
     }
 
     @Test
     public void rightValidation() {
-        User requestUser = User.builder().email("mail@mail.com").login("login").name("name").birthday(LocalDate.of(1990, 1,1)).build();
-        User responseUser = userController.addUser(requestUser);
-
-        assertEquals(responseUser, requestUser, "Добавлен не верный пользователь.");
+        assertEquals(userController.addUser(user), user, "Добавлен не верный пользователь.");
     }
 
     @Test
     public void emptyName() {
-        User requestUser = User.builder().email("mail@mail.com").login("login").name(null).birthday(LocalDate.of(1990, 1,1)).build();
-        userController.addUser(requestUser);
-        User responseUser = User.builder().id(1).email("mail@mail.com").login("login").name("login").birthday(LocalDate.of(1990, 1,1)).build();
+        user.setName(null);
+        User responseUser = userController.addUser(user);
+        user.setName("login");
+        user.setId(1);
 
-        assertEquals(responseUser, requestUser, "Имени не присвоен логин.");
+        assertEquals(user, responseUser, "Имени не присвоен логин.");
     }
 }
