@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class UserController {
     @GetMapping
     public List<User> allUsers() {
         log.debug("Количество пользователей: " + users.size());
-        return (List<User>) users.values();
+        return new ArrayList<>(users.values());
     }
 
     @PostMapping

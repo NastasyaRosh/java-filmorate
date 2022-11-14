@@ -22,7 +22,7 @@ public class FilmController {
     @GetMapping
     public List<Film> allFilms() {
         log.debug("Количество фильмов: " + films.size());
-        return (List<Film>) films.values();
+        return new ArrayList<>(films.values());
     }
 
     @PostMapping
