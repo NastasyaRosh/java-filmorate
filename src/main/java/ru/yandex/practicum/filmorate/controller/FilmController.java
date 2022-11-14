@@ -8,9 +8,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @RequestMapping("/films")
@@ -20,6 +18,29 @@ public class FilmController {
     private Map<Integer, Film> films = new HashMap<>();
 
     private int id = 0;
+
+    @GetMapping
+    public List<Film> allFilms() {
+        log.debug("Количество фильмов: " + films.size());
+        return (List<Film>) films.values();
+    }
+
+    @PostMapping
+    public Film addFilm(@Valid @RequestBody Film film) {
+        validate(film);
+        films.put(setId(film), film);
+        log.debug("Создан новый фильм с ID:" + film.getId());
+        return films.get(film.getId());
+    }
+
+    @PutMapping
+    public Film updateFilm(@Valid @RequestBody Film film) throws FilmOrUserNotExist {
+        validate(film);
+        checkExist(film);
+        films.replace(film.getId(), film);
+        log.debug(String.format("Фильм с ID = %d обновлен.", film.getId()));
+        return films.get(film.getId());
+    }
 
     private int setId(Film film) {
         film.setId(++this.id);
@@ -38,29 +59,6 @@ public class FilmController {
             log.warn("Введен неверный ID.");
             throw new FilmOrUserNotExist("Фильма с таким ID не существует.");
         }
-    }
-
-    @GetMapping
-    public Collection<Film> allFilms() {
-        log.debug("Количество фильмов: " + films.size());
-        return films.values();
-    }
-
-    @PostMapping
-    public Film addFilm(@Valid @RequestBody Film film) {
-        validate(film);
-        films.put(setId(film), film);
-        log.debug("Создан новый фильм с ID:" + film.getId());
-        return films.get(film.getId());
-    }
-
-    @PutMapping
-    public Film updateFilm(@Valid @RequestBody Film film) throws FilmOrUserNotExist {
-        validate(film);
-        checkExist(film);
-        films.replace(film.getId(), film);
-        log.debug(String.format("Фильм с ID = %d обновлен.", film.getId()));
-        return films.get(film.getId());
     }
 
 }

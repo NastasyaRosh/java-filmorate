@@ -6,8 +6,8 @@ import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -18,6 +18,29 @@ public class UserController {
     private Map<Integer, User> users = new HashMap<>();
 
     private int id = 0;
+
+    @GetMapping
+    public List<User> allUsers() {
+        log.debug("Количество пользователей: " + users.size());
+        return (List<User>) users.values();
+    }
+
+    @PostMapping
+    public User addUser(@Valid @RequestBody User user) {
+        forNullName(user);
+        users.put(setId(user), user);
+        log.debug("Создан новый пользователь с ID: " + user.getId());
+        return users.get(user.getId());
+    }
+
+    @PutMapping
+    public User updateUser(@Valid @RequestBody User user) throws FilmOrUserNotExist {
+        forNullName(user);
+        checkExist(user);
+        users.replace(user.getId(), user);
+        log.debug(String.format("Пользователь с ID = %d обновлен.", user.getId()));
+        return users.get(user.getId());
+    }
 
     private int setId(User user) {
         user.setId(++this.id);
@@ -37,26 +60,4 @@ public class UserController {
         }
     }
 
-    @GetMapping
-    public Collection<User> allUsers() {
-        log.debug("Количество пользователей: " + users.size());
-        return users.values();
-    }
-
-    @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
-        forNullName(user);
-        users.put(setId(user), user);
-        log.debug("Создан новый пользователь с ID: " + user.getId());
-        return users.get(user.getId());
-    }
-
-    @PutMapping
-    public User updateUser(@Valid @RequestBody User user) throws FilmOrUserNotExist {
-        forNullName(user);
-        checkExist(user);
-        users.replace(user.getId(), user);
-        log.debug(String.format("Пользователь с ID = %d обновлен.", user.getId()));
-        return users.get(user.getId());
-    }
 }
