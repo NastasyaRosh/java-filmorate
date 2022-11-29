@@ -8,13 +8,12 @@ import ru.yandex.practicum.filmorate.controller.FilmController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
-import ru.yandex.practicum.filmorate.exception.IncorrectId;
 
 import javax.validation.ValidationException;
 
 @RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class})
 public class ErrorHandler {
-    @ExceptionHandler({FilmOrUserNotExist.class, IncorrectId.class})
+    @ExceptionHandler(FilmOrUserNotExist.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse notExist(final RuntimeException e){ return new ErrorResponse(e.getMessage());}
 

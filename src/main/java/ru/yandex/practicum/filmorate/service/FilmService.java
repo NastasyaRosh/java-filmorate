@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
-import ru.yandex.practicum.filmorate.exception.IncorrectId;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
@@ -58,7 +57,7 @@ public class FilmService {
 
     private void checkId(int id) {
         if (id <= 0) {
-            throw new IncorrectId("Передан неположительный ID.");
+            throw new FilmOrUserNotExist("Передан неположительный ID.");
         }
     }
 }
