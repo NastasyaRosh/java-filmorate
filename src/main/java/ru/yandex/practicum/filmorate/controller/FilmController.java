@@ -59,7 +59,8 @@ public class FilmController {
 
     @GetMapping("/popular")
     public List<Film> popularFilms(@RequestParam(required = false) Integer count) {
-        log.debug(String.format("Вывод %d наиболее популярных фильмов. Всего имеется %d фильмов.", count, filmService.allFilms().size()));
+        log.debug(String.format("Вывод %d наиболее популярных фильмов. Всего имеется %d фильмов.",
+                count, filmService.allFilms().size()));
         return filmService.popularFilms(count);
     }
 }

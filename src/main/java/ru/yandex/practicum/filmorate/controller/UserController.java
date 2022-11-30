@@ -59,13 +59,15 @@ public class UserController {
 
     @GetMapping("/{id}/friends")
     public List<User> allFriends(@PathVariable int id) {
-        log.debug(String.format("Количество друзей у пользователя с ID = %d равно %d.", id, userService.allFriends(id).size()));
+        log.debug(String.format("Количество друзей у пользователя с ID = %d равно %d.",
+                id, userService.allFriends(id).size()));
         return userService.allFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     public List<User> commonFriends(@PathVariable int id, @PathVariable int otherId) {
-        log.debug(String.format("Количество общих друзей у пользователей с ID = %d и ID = %d равно %d.", id, otherId, userService.commonFriends(id, otherId).size()));
+        log.debug(String.format("Количество общих друзей у пользователей с ID = %d и ID = %d равно %d.",
+                id, otherId, userService.commonFriends(id, otherId).size()));
         return userService.commonFriends(id, otherId);
     }
 

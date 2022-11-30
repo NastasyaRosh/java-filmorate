@@ -15,13 +15,19 @@ import javax.validation.ValidationException;
 public class ErrorHandler {
     @ExceptionHandler(FilmOrUserNotExist.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse notExist(final RuntimeException e){ return new ErrorResponse(e.getMessage());}
+    public ErrorResponse notExist(final RuntimeException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler({FilmOrUserAlreadyExist.class, ValidationException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse alreadyExist(final RuntimeException e){ return new ErrorResponse(e.getMessage());}
+    public ErrorResponse alreadyExist(final RuntimeException e) {
+        return new ErrorResponse(e.getMessage());
+    }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ErrorResponse otherExceptions(final Throwable e) {return new ErrorResponse("Произошла непредвиденная ошибка.");}
+    public ErrorResponse otherExceptions(final Throwable e) {
+        return new ErrorResponse("Произошла непредвиденная ошибка.");
+    }
 }

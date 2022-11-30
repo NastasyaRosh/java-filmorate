@@ -21,7 +21,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User addUser(User user) {
-        forNullName(user);
         if (checkEmail(user.getEmail()).isPresent()) {
             throw new FilmOrUserAlreadyExist(String.format("Пользователь с почтой %s уже существует.", user.getEmail()));
         }
@@ -31,7 +30,6 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public User updateUser(User user) throws FilmOrUserNotExist {
-        forNullName(user);
         checkExist(user.getId());
         users.replace(user.getId(), user);
         return users.get(user.getId());
@@ -46,14 +44,6 @@ public class InMemoryUserStorage implements UserStorage {
     private int setId(User user) {
         user.setId(++this.id);
         return this.id;
-    }
-
-    private void forNullName(User user) {
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        } else if (user.getName().isEmpty()) {
-            user.setName(user.getLogin());
-        }
     }
 
     private void checkExist(int id) throws FilmOrUserNotExist {

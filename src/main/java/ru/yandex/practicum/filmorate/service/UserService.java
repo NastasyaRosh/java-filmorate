@@ -24,10 +24,12 @@ public class UserService {
     }
 
     public User addUser(User user) {
+        forNullName(user);
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) throws FilmOrUserNotExist {
+        forNullName(user);
         return userStorage.updateUser(user);
     }
 
@@ -61,7 +63,18 @@ public class UserService {
     }
 
     public List<User> commonFriends(int id, int otherId) {
-        return userById(id).getFriends().stream().filter(userById(otherId).getFriends()::contains).map(this::userById).collect(Collectors.toList());
+        return userById(id).getFriends().stream().
+                filter(userById(otherId).getFriends()::contains).
+                map(this::userById).
+                collect(Collectors.toList());
+    }
+
+    private void forNullName(User user) {
+        if (user.getName() == null) {
+            user.setName(user.getLogin());
+        } else if (user.getName().isEmpty()) {
+            user.setName(user.getLogin());
+        }
     }
 
     private void checkId(int id) {
