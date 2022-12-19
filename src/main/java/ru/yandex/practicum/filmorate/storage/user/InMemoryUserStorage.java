@@ -5,7 +5,12 @@ import ru.yandex.practicum.filmorate.exception.FilmOrUserAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+
 
 @Component
 public class InMemoryUserStorage implements UserStorage {

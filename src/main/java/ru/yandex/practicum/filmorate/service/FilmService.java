@@ -60,9 +60,9 @@ public class FilmService {
             count = DEFAULT_COUNT;
         }
         return filmStorage.allFilms().stream().
-                sorted((f1, f2) -> (f2.getLikes().size() - f1.getLikes().size())).
-                limit(count).
-                collect(Collectors.toList());
+                sorted((f1, f2) -> (f2.getLikes().size() - f1.getLikes().size()))
+                .limit(count)
+                .collect(Collectors.toList());
     }
 
     private void checkId(int id) {

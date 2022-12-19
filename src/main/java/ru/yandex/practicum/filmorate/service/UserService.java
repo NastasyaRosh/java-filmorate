@@ -63,10 +63,10 @@ public class UserService {
     }
 
     public List<User> commonFriends(int id, int otherId) {
-        return userById(id).getFriends().stream().
-                filter(userById(otherId).getFriends()::contains).
-                map(this::userById).
-                collect(Collectors.toList());
+        return userById(id).getFriends().stream()
+                .filter(userById(otherId).getFriends()::contains)
+                .map(this::userById)
+                .collect(Collectors.toList());
     }
 
     private void forNullName(User user) {
