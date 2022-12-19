@@ -1,6 +1,6 @@
 # java-filmorate
 
-![ER-diagram](java-filmorate/Filmorate.png)
+![ER-diagram](/Filmorate.png)
 
 ### Пояснение к схеме:
 - жанры фильмов решено сделать как отдельную таблицу-справочник;
