@@ -33,8 +33,6 @@
 
 **4. Поиск всех друзей пользователя по его логину**
 
-> Есть сомнения на счет корректности этого запроса.
-
 - SELECT u.login
 - FROM users AS u
 - LEFT JOIN friends AS f ON u.user_id = f.user_id_A
