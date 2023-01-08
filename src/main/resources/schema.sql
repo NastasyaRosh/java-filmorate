@@ -56,17 +56,17 @@ create table IF NOT EXISTS USERS
     BIRTHDAY  DATE
 );
 
-create table FRIENDS
+create table IF NOT EXISTS FRIENDS
 (
     USER_ID   INTEGER not null,
     FRIEND_ID INTEGER not null,
     constraint FRIENDS_PK
-        primary key (USER_ID),
+        primary key (USER_ID, FRIEND_ID),
     constraint FRIENDS_USERS_USER_ID_FK
-        foreign key (USER_ID) references USERS,
+        foreign key (USER_ID) references USERS
+            on delete cascade,
     constraint FRIENDS_USERS_USER_ID_FK_2
         foreign key (FRIEND_ID) references USERS
-            on delete cascade
 );
 
 create table IF NOT EXISTS LIKES

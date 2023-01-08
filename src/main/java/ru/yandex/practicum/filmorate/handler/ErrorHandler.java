@@ -5,13 +5,15 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import ru.yandex.practicum.filmorate.controller.FilmController;
+import ru.yandex.practicum.filmorate.controller.GenreController;
+import ru.yandex.practicum.filmorate.controller.RatingController;
 import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 
 import javax.validation.ValidationException;
 
-@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class})
+@RestControllerAdvice(assignableTypes = {FilmController.class, UserController.class, GenreController.class, RatingController.class})
 public class ErrorHandler {
     @ExceptionHandler(FilmOrUserNotExist.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)

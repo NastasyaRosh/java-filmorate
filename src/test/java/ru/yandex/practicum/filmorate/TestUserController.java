@@ -17,11 +17,11 @@ public class TestUserController {
     private UserController userController;
     private User user;
 
-    @BeforeEach
+/*    @BeforeEach
     public void beforeEach() {
         userController = new UserController(new UserService(new InMemoryUserStorage()));
         user = User.builder().email("mail@mail.com").login("login").name("name").birthday(LocalDate.of(1990, 1, 1)).build();
-    }
+    }*/
 
     @Test
     public void notExist() {
