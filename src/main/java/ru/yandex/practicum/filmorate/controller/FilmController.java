@@ -45,7 +45,7 @@ public class FilmController {
         return filmService.filmById(id);
     }
 
-    @PutMapping("/{id}/like/{userId}")
+    /*@PutMapping("/{id}/like/{userId}")
     public Film setLike(@PathVariable int id, @PathVariable int userId) {
         log.debug(String.format("Фильму с ID = %d ставит лайк пользователь с ID = %d.", id, userId));
         return filmService.setLike(id, userId);
@@ -55,7 +55,7 @@ public class FilmController {
     public Film deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.debug(String.format("У фильма с ID = %d снимает свой лайк пользователь с ID = %d.", id, userId));
         return filmService.deleteLike(id, userId);
-    }
+    }*/
 
     @GetMapping("/popular")
     public List<Film> popularFilms(@RequestParam(required = false) Integer count) {

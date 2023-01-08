@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
@@ -9,6 +10,7 @@ import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,10 +18,10 @@ public class FilmService {
 
     private static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 28);
     private static final int DEFAULT_COUNT = 10;
-    private final FilmStorage filmStorage;
+    private final FilmDao filmStorage;
 
     @Autowired
-    public FilmService(FilmStorage filmStorage) {
+    public FilmService(FilmDao filmStorage) {
         this.filmStorage = filmStorage;
     }
 
@@ -38,10 +40,12 @@ public class FilmService {
     }
 
     public Film filmById(int id) {
-        return filmStorage.filmById(id);
+        Film filmOut = filmStorage.filmById(id).orElseThrow(() ->
+                new FilmOrUserNotExist(String.format("Фильм с ID %d не найден.", id)));
+        return filmOut;
     }
 
-    public Film setLike(int id, int userId) {
+/*    public Film setLike(int id, int userId) {
         filmStorage.filmById(id).setLike(userId);
         return filmStorage.filmById(id);
     }
@@ -53,7 +57,7 @@ public class FilmService {
             film.deleteLike(userId);
         }
         return film;
-    }
+    }*/
 
     public List<Film> popularFilms(Integer count) {
         if (count == null) {

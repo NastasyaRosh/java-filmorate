@@ -17,11 +17,11 @@ public class TestFilmController {
     private FilmController filmController;
     private Film film;
 
-    @BeforeEach
+/*    @BeforeEach
     public void beforeEach() {
         filmController = new FilmController(new FilmService(new InMemoryFilmStorage()));
         film = Film.builder().name("Фильм").description("Верные данные.").releaseDate(LocalDate.now()).duration(90).build();
-    }
+    }*/
 
     @Test
     public void errorValidation() {
