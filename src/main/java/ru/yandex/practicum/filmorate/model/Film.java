@@ -26,9 +26,9 @@ public class Film {
     @Positive
     private int duration;
     private Set<Integer> likes = new HashSet<>();
-    private int ratingId;
+    //private int rate;
     private List<Genre> genres;
-    private Rating rating;
+    private Rating mpa;
 
     @Builder
     public Film(String name, String description, LocalDate releaseDate, int duration) {

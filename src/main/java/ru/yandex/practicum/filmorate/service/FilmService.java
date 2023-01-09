@@ -3,15 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
+import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -19,10 +18,12 @@ public class FilmService {
     private static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 28);
     private static final int DEFAULT_COUNT = 10;
     private final FilmDao filmStorage;
+    private final FilmGenreDao filmGenreDao;
 
     @Autowired
-    public FilmService(FilmDao filmStorage) {
+    public FilmService(FilmDao filmStorage, FilmGenreDao filmGenreDao) {
         this.filmStorage = filmStorage;
+        this.filmGenreDao = filmGenreDao;
     }
 
     public List<Film> allFilms() {
@@ -36,7 +37,19 @@ public class FilmService {
 
     public Film updateFilm(Film film) throws FilmOrUserNotExist {
         validate(film);
-        return filmStorage.updateFilm(film);
+        Film filmOut = filmById(film.getId());
+        List<Genre> filmGenres = film.getGenres();
+        filmOut = filmStorage.updateFilm(film);
+        //удалить жанры фильма из таблицы
+        filmGenreDao.deleteFilmGenre(film.getId());
+        if (filmGenres != null && !filmGenres.isEmpty()) {
+            //создать данные в таблице
+            for (Genre genre : filmGenres) {
+                filmGenreDao.addFilmGenre(film.getId(), genre.getId());
+            }
+        }
+        filmOut.setGenres(filmGenreDao.findGenresByFilmId(film.getId()));
+        return filmOut;
     }
 
     public Film filmById(int id) {
@@ -57,7 +70,7 @@ public class FilmService {
             film.deleteLike(userId);
         }
         return film;
-    }*/
+    }
 
     public List<Film> popularFilms(Integer count) {
         if (count == null) {
@@ -67,7 +80,7 @@ public class FilmService {
                 sorted((f1, f2) -> (f2.getLikes().size() - f1.getLikes().size()))
                 .limit(count)
                 .collect(Collectors.toList());
-    }
+    }*/
 
     private void checkId(int id) {
         if (id <= 0) {

@@ -26,14 +26,13 @@ public class FilmDaoImpl implements FilmDao {
     public List<Film> allFilms() {
         final String sql = "SELECT * FROM FILMS" +
                 " JOIN RATING ON FILMS.RATING_ID = RATING.RATING_ID" +
-                //" JOIN FILM_GENRE ON FILMS.FILM_ID = FILM_GENRE.FILM_ID" +
                 " GROUP BY FILMS.FILM_ID";
         return jdbcTemplate.query(sql, (rs, rowNum) -> filmMapper(rs));
     }
 
     @Override
     public Film addFilm(Film film) {
-        String sql = "INSERT INTO FILMS (FILM_NAME, FILM_DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) VALUES (?,?,?,?,?)";
+        String sql = "INSERT INTO FILMS (FILM_NAME, FILM_DESCRIPTION, RELEASE_DATE, DURATION, RATING_ID) VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         jdbcTemplate.update(con -> {
             PreparedStatement stmt = con.prepareStatement(sql, new String[]{"FILM_ID"});
@@ -41,7 +40,7 @@ public class FilmDaoImpl implements FilmDao {
             stmt.setString(2, film.getDescription());
             stmt.setDate(3, Date.valueOf(film.getReleaseDate()));
             stmt.setInt(4, film.getDuration());
-            stmt.setInt(5, film.getRatingId());
+            stmt.setInt(5, film.getMpa().getId());
             return stmt;
         }, keyHolder);
         film.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
@@ -57,7 +56,7 @@ public class FilmDaoImpl implements FilmDao {
                 film.getDescription(),
                 Date.valueOf(film.getReleaseDate()),
                 film.getDuration(),
-                film.getRatingId(),
+                film.getMpa().getId(),
                 film.getId()
         );
         return film;
@@ -67,7 +66,6 @@ public class FilmDaoImpl implements FilmDao {
     public Optional<Film> filmById(Integer id) {
         final String sql = "SELECT * FROM FILMS" +
                 " JOIN RATING ON FILMS.RATING_ID = RATING.RATING_ID" +
-                //" JOIN FILM_GENRE ON FILMS.FILM_ID = FILM_GENRE.FILM_ID" +
                 " WHERE FILMS.FILM_ID = ?";
         final List<Film> films = jdbcTemplate.query(sql, (rs, rowNum) -> filmMapper(rs), id);
         return films.size() > 0 ? Optional.of(films.get(0)) : Optional.empty();
@@ -83,7 +81,8 @@ public class FilmDaoImpl implements FilmDao {
         filmOut.setDuration(resultSet.getInt("DURATION"));
         rating.setId(resultSet.getInt("RATING_ID"));
         rating.setName(resultSet.getString("RATING_NAME"));
-        filmOut.setRating(rating);
+        filmOut.setMpa(rating);
+        filmOut.setGenres(Collections.emptyList());
         return filmOut;
     }
 }

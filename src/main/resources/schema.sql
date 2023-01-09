@@ -19,14 +19,13 @@ create table IF NOT EXISTS RATING
 
 create table IF NOT EXISTS FILMS
 (
-    FILM_ID          INTEGER auto_increment,
+    FILM_ID          INTEGER auto_increment
+        primary key,
     FILM_NAME        CHARACTER VARYING(200) not null,
     FILM_DESCRIPTION CHARACTER VARYING(1000),
     RELEASE_DATE     DATE,
     DURATION         INTEGER,
     RATING_ID        INTEGER,
-    constraint FILMS_PK
-        primary key (FILM_ID),
     constraint FILMS_RATING_RATING_ID_FK
         foreign key (RATING_ID) references RATING
             on delete set null

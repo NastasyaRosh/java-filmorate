@@ -55,12 +55,12 @@ public class FilmController {
     public Film deleteLike(@PathVariable int id, @PathVariable int userId) {
         log.debug(String.format("У фильма с ID = %d снимает свой лайк пользователь с ID = %d.", id, userId));
         return filmService.deleteLike(id, userId);
-    }*/
+    }
 
     @GetMapping("/popular")
     public List<Film> popularFilms(@RequestParam(required = false) Integer count) {
         log.debug(String.format("Вывод %d наиболее популярных фильмов. Всего имеется %d фильмов.",
                 count, filmService.allFilms().size()));
         return filmService.popularFilms(count);
-    }
+    }*/
 }
