@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import javax.validation.ValidationException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class FilmService {
@@ -27,12 +28,25 @@ public class FilmService {
     }
 
     public List<Film> allFilms() {
-        return filmStorage.allFilms();
+        List<Film> films = filmStorage.allFilms();
+        for (Film film : films) {
+            film.setGenres(filmGenreDao.findGenresByFilmId(film.getId()));
+        }
+        return films;
     }
 
     public Film addFilm(Film film) {
         validate(film);
-        return filmStorage.addFilm(film);
+        List<Genre> filmGenres = film.getGenres();
+        Film filmOut = filmStorage.addFilm(film);
+        if (filmGenres != null && !filmGenres.isEmpty()) {
+            filmGenres = filmGenres.stream().collect(Collectors.toSet()).stream().collect(Collectors.toList());
+            for (Genre genre : filmGenres) {
+                filmGenreDao.addFilmGenre(film.getId(), genre.getId());
+            }
+        }
+        filmOut.setGenres(filmGenreDao.findGenresByFilmId(film.getId()));
+        return filmOut;
     }
 
     public Film updateFilm(Film film) throws FilmOrUserNotExist {
@@ -40,10 +54,9 @@ public class FilmService {
         Film filmOut = filmById(film.getId());
         List<Genre> filmGenres = film.getGenres();
         filmOut = filmStorage.updateFilm(film);
-        //удалить жанры фильма из таблицы
         filmGenreDao.deleteFilmGenre(film.getId());
         if (filmGenres != null && !filmGenres.isEmpty()) {
-            //создать данные в таблице
+            filmGenres = filmGenres.stream().collect(Collectors.toSet()).stream().collect(Collectors.toList());
             for (Genre genre : filmGenres) {
                 filmGenreDao.addFilmGenre(film.getId(), genre.getId());
             }
@@ -55,6 +68,7 @@ public class FilmService {
     public Film filmById(int id) {
         Film filmOut = filmStorage.filmById(id).orElseThrow(() ->
                 new FilmOrUserNotExist(String.format("Фильм с ID %d не найден.", id)));
+        filmOut.setGenres(filmGenreDao.findGenresByFilmId(id));
         return filmOut;
     }
 
