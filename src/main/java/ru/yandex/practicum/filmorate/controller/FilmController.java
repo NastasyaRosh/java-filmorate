@@ -16,6 +16,7 @@ import java.util.*;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
+    private static final int DEFAULT_COUNT = 10;
 
     @Autowired
     public FilmController(FilmService filmService) {
@@ -45,7 +46,7 @@ public class FilmController {
         return filmService.filmById(id);
     }
 
-    /*@PutMapping("/{id}/like/{userId}")
+    @PutMapping("/{id}/like/{userId}")
     public Film setLike(@PathVariable int id, @PathVariable int userId) {
         log.debug(String.format("Фильму с ID = %d ставит лайк пользователь с ID = %d.", id, userId));
         return filmService.setLike(id, userId);
@@ -61,6 +62,9 @@ public class FilmController {
     public List<Film> popularFilms(@RequestParam(required = false) Integer count) {
         log.debug(String.format("Вывод %d наиболее популярных фильмов. Всего имеется %d фильмов.",
                 count, filmService.allFilms().size()));
+        if (count == null) {
+            count = DEFAULT_COUNT;
+        }
         return filmService.popularFilms(count);
-    }*/
+    }
 }

@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
+import ru.yandex.practicum.filmorate.dao.impl.LikeDaoImpl;
+import ru.yandex.practicum.filmorate.exception.FilmOrUserAlreadyExist;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.model.User;
 
 import javax.validation.ValidationException;
 import java.time.LocalDate;
@@ -21,10 +24,15 @@ public class FilmService {
     private final FilmDao filmStorage;
     private final FilmGenreDao filmGenreDao;
 
+    private final LikeDaoImpl likeDao;
+    private final UserService userService;
+
     @Autowired
-    public FilmService(FilmDao filmStorage, FilmGenreDao filmGenreDao) {
+    public FilmService(FilmDao filmStorage, FilmGenreDao filmGenreDao, LikeDaoImpl likeDao, UserService userService) {
         this.filmStorage = filmStorage;
         this.filmGenreDao = filmGenreDao;
+        this.likeDao = likeDao;
+        this.userService = userService;
     }
 
     public List<Film> allFilms() {
@@ -72,29 +80,28 @@ public class FilmService {
         return filmOut;
     }
 
-/*    public Film setLike(int id, int userId) {
-        filmStorage.filmById(id).setLike(userId);
-        return filmStorage.filmById(id);
+    public Film setLike(int filmId, int userId) {
+        Film film = filmById(filmId);
+        User user = userService.userById(userId);
+        if (likeDao.findUsersByLikesFilm(userId).contains(user)) {
+            throw new FilmOrUserAlreadyExist("Лайк уже есть.");
+        }
+        likeDao.addLike(filmId, userId);
+        return film;
     }
 
-    public Film deleteLike(int id, int userId) {
-        checkId(userId);
-        Film film = filmStorage.filmById(id);
-        if (film.getLikes().contains(userId)) {
-            film.deleteLike(userId);
+    public Film deleteLike(int filmId, int userId) {
+        Film film = filmById(filmId);
+        User user = userService.userById(userId);
+        if (!likeDao.findUsersByLikesFilm(filmId).contains(user)){
+            throw new FilmOrUserAlreadyExist("Нельзя удалить лайк, который еще не был поставлен.");
         }
         return film;
     }
 
     public List<Film> popularFilms(Integer count) {
-        if (count == null) {
-            count = DEFAULT_COUNT;
-        }
-        return filmStorage.allFilms().stream().
-                sorted((f1, f2) -> (f2.getLikes().size() - f1.getLikes().size()))
-                .limit(count)
-                .collect(Collectors.toList());
-    }*/
+        return likeDao.findAllPopular(count);
+    }
 
     private void checkId(int id) {
         if (id <= 0) {
