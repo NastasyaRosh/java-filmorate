@@ -6,7 +6,8 @@ import java.util.List;
 
 public interface FilmGenreDao {
     void addFilmGenre(Integer idFilm, Integer idGenre);
+
     void deleteFilmGenre(Integer idFilm);
 
-    List<Genre> findGenresByFilmId (Integer id);
+    List<Genre> findGenresByFilmId(Integer id);
 }

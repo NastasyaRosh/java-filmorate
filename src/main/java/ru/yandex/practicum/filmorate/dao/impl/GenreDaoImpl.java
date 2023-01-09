@@ -21,7 +21,7 @@ public class GenreDaoImpl implements GenreDao {
     @Override
     public List<Genre> allGenres() {
         final String sql = "SELECT * FROM GENRE";
-        return jdbcTemplate.query(sql, (rs, rowNum) ->genreMapper(rs));
+        return jdbcTemplate.query(sql, (rs, rowNum) -> genreMapper(rs));
     }
 
     @Override

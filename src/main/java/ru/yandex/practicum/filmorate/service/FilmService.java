@@ -93,7 +93,7 @@ public class FilmService {
     public Film deleteLike(int filmId, int userId) {
         Film film = filmById(filmId);
         User user = userService.userById(userId);
-        if (!likeDao.findUsersByLikesFilm(filmId).contains(user)){
+        if (!likeDao.findUsersByLikesFilm(filmId).contains(user)) {
             throw new FilmOrUserAlreadyExist("Нельзя удалить лайк, который еще не был поставлен.");
         }
         return film;

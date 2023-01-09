@@ -50,7 +50,7 @@ public class FilmDaoImpl implements FilmDao {
     @Override
     public Film updateFilm(Film film) {
         final String sql = "UPDATE FILMS SET FILM_NAME = ?, FILM_DESCRIPTION = ?, RELEASE_DATE = ?, DURATION = ?, RATING_ID = ?"
-            + " WHERE FILM_ID = ?";
+                + " WHERE FILM_ID = ?";
         jdbcTemplate.update(sql,
                 film.getName(),
                 film.getDescription(),
@@ -71,7 +71,7 @@ public class FilmDaoImpl implements FilmDao {
         return films.size() > 0 ? Optional.of(films.get(0)) : Optional.empty();
     }
 
-    private Film filmMapper(ResultSet resultSet) throws SQLException{
+    private Film filmMapper(ResultSet resultSet) throws SQLException {
         Film filmOut = new Film();
         Rating rating = new Rating();
         filmOut.setId(resultSet.getInt("FILM_ID"));

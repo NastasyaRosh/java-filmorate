@@ -56,7 +56,7 @@ public class LikeDaoImpl implements LikeDao {
         return userOut;
     }
 
-    private Film filmMapper(ResultSet resultSet) throws SQLException{
+    private Film filmMapper(ResultSet resultSet) throws SQLException {
         Film filmOut = new Film();
         Rating rating = new Rating();
         filmOut.setId(resultSet.getInt("FILM_ID"));
