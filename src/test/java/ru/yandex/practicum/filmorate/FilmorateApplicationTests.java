@@ -33,7 +33,7 @@ class FilmorateApplicationTests {
     @Test
     public void testFindUserById() {
 
-        Optional<User> userOptional = userDao.userById(1);
+        Optional<User> userOptional = userDao.findUserById(1);
 
         assertThat(userOptional)
                 .isPresent()
@@ -44,7 +44,7 @@ class FilmorateApplicationTests {
 
     @Test
     public void testFindAllUsers() {
-        List<User> users = userDao.allUsers();
+        List<User> users = userDao.getAllUsers();
 
         assertEquals(2, users.size(), "Не все пользователи были возвращены из БД.");
     }
@@ -52,17 +52,17 @@ class FilmorateApplicationTests {
     @Test
     public void testAddFriends() {
         friendDao.addFriend(1, 2);
-        Optional<User> friend = friendDao.friendsByUserId(1).stream().findFirst();
+        Optional<User> friend = friendDao.findFriendsByUserId(1).stream().findFirst();
         assertThat(friend)
                 .isPresent()
                 .hasValueSatisfying(user -> assertThat(user).hasFieldOrPropertyWithValue("id", 2));
-        assertEquals(userDao.userById(2), friend, "Друг не был возвращен из БД.");
+        assertEquals(userDao.findUserById(2), friend, "Друг не был возвращен из БД.");
     }
 
     @Test
     public void testFindFilmById() {
 
-        Optional<Film> filmOptional = filmDao.filmById(1);
+        Optional<Film> filmOptional = filmDao.findFilmById(1);
 
         assertThat(filmOptional)
                 .isPresent()
@@ -81,7 +81,7 @@ class FilmorateApplicationTests {
 
     @Test
     void testFindRatingByFilm() {
-        Optional<Rating> ratingOptional = ratingDao.ratingById(2);
+        Optional<Rating> ratingOptional = ratingDao.findRatingById(2);
 
         assertThat(ratingOptional)
                 .isPresent()

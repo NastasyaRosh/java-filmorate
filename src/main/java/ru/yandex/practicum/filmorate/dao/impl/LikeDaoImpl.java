@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dao.LikeDao;
@@ -13,12 +14,9 @@ import java.util.Collections;
 import java.util.List;
 
 @Repository
+@RequiredArgsConstructor
 public class LikeDaoImpl implements LikeDao {
     private final JdbcTemplate jdbcTemplate;
-
-    public LikeDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
 
     @Override
     public List<Film> findAllPopular(Integer count) {
@@ -47,27 +45,28 @@ public class LikeDaoImpl implements LikeDao {
     }
 
     private User userMapper(ResultSet resultSet) throws SQLException {
-        User userOut = new User();
-        userOut.setId(resultSet.getInt("USER_ID"));
-        userOut.setEmail(resultSet.getString("EMAIL"));
-        userOut.setLogin(resultSet.getString("LOGIN"));
-        userOut.setName(resultSet.getString("USER_NAME"));
-        userOut.setBirthday(resultSet.getDate("BIRTHDAY").toLocalDate());
-        return userOut;
+        return User.builder()
+                .id(resultSet.getInt("USER_ID"))
+                .email(resultSet.getString("EMAIL"))
+                .login(resultSet.getString("LOGIN"))
+                .name(resultSet.getString("USER_NAME"))
+                .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
+                .build();
     }
 
     private Film filmMapper(ResultSet resultSet) throws SQLException {
-        Film filmOut = new Film();
-        Rating rating = new Rating();
-        filmOut.setId(resultSet.getInt("FILM_ID"));
-        filmOut.setName(resultSet.getString("FILM_NAME"));
-        filmOut.setDescription(resultSet.getString("FILM_DESCRIPTION"));
-        filmOut.setReleaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate());
-        filmOut.setDuration(resultSet.getInt("DURATION"));
-        rating.setId(resultSet.getInt("RATING_ID"));
-        rating.setName(resultSet.getString("RATING_NAME"));
-        filmOut.setMpa(rating);
-        filmOut.setGenres(Collections.emptyList());
-        return filmOut;
+        Rating rating = Rating.builder()
+                .id(resultSet.getInt("RATING_ID"))
+                .name(resultSet.getString("RATING_NAME"))
+                .build();
+        return Film.builder()
+                .id(resultSet.getInt("FILM_ID"))
+                .name(resultSet.getString("FILM_NAME"))
+                .description(resultSet.getString("FILM_DESCRIPTION"))
+                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                .duration(resultSet.getInt("DURATION"))
+                .mpa(rating)
+                .genres(Collections.emptyList())
+                .build();
     }
 }

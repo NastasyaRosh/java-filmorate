@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface RatingDao {
-    List<Rating> allRatings();
+    List<Rating> getAllRatings();
 
-    Optional<Rating> ratingById(Integer id);
+    Optional<Rating> findRatingById(Integer id);
 }

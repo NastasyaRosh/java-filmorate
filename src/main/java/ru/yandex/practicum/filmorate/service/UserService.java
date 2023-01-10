@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FriendDao;
 import ru.yandex.practicum.filmorate.dao.UserDao;
@@ -12,35 +12,29 @@ import javax.validation.ValidationException;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserDao userStorage;
     private final FriendDao friendDao;
 
-    @Autowired
-    public UserService(UserDao userStorage, FriendDao friendDao) {
-        this.userStorage = userStorage;
-        this.friendDao = friendDao;
-    }
-
-    public List<User> allUsers() {
-        return userStorage.allUsers();
+    public List<User> getAllUsers() {
+        return userStorage.getAllUsers();
     }
 
     public User addUser(User user) {
-        forNullName(user);
+        setFullName(user);
         return userStorage.addUser(user);
     }
 
     public User updateUser(User user) throws FilmOrUserNotExist {
-        User userOut = userById(user.getId());
-        forNullName(user);
+        findUserById(user.getId());
+        setFullName(user);
         return userStorage.updateUser(user);
     }
 
-    public User userById(int id) throws FilmOrUserNotExist {
-        User userOut = userStorage.userById(id).orElseThrow(() ->
+    public User findUserById(int id) throws FilmOrUserNotExist {
+        return userStorage.findUserById(id).orElseThrow(() ->
                 new FilmOrUserNotExist(String.format("Пользователь с ID %d не найден.", id)));
-        return userOut;
     }
 
     public User addFriend(int id, int friendId) {
@@ -48,35 +42,35 @@ public class UserService {
         if (id == friendId) {
             throw new ValidationException("Пользователь пытается подружиться сам с собой.");
         }
-        User user = userById(id);
-        User friend = userById(friendId);
-        if (allFriends(id).contains(friend)) {
+        User user = findUserById(id);
+        User friend = findUserById(friendId);
+        if (findFriendsByUserId(id).contains(friend)) {
             throw new FilmOrUserAlreadyExist("Дружба уже зарегистрирована.");
         }
         friendDao.addFriend(id, friendId);
         return user;
     }
 
-    public List<User> allFriends(Integer userId) {
-        return friendDao.friendsByUserId(userId);
+    public List<User> findFriendsByUserId(Integer userId) {
+        return friendDao.findFriendsByUserId(userId);
     }
 
     public User deleteFriend(int id, int friendId) {
         checkId(friendId);
-        User user = userById(id);
-        User friend = userById(friendId);
-        if (!allFriends(id).contains(friend)) {
+        User user = findUserById(id);
+        User friend = findUserById(friendId);
+        if (!findFriendsByUserId(id).contains(friend)) {
             throw new FilmOrUserNotExist("Такая дружба не была зарегистрирована.");
         }
         friendDao.deleteFriend(id, friendId);
         return user;
     }
 
-    public List<User> commonFriends(int id, int otherId) {
-        return friendDao.commonFriends(id, otherId);
+    public List<User> findCommonFriends(int id, int otherId) {
+        return friendDao.findCommonFriends(id, otherId);
     }
 
-    private void forNullName(User user) {
+    private void setFullName(User user) {
         if (user.getName() == null) {
             user.setName(user.getLogin());
         } else if (user.getName().isEmpty()) {

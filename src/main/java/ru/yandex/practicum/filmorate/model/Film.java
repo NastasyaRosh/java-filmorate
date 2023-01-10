@@ -26,16 +26,18 @@ public class Film {
     @Positive
     private int duration;
     private Set<Integer> likes = new HashSet<>();
-    //private int rate;
     private List<Genre> genres;
     private Rating mpa;
 
     @Builder
-    public Film(String name, String description, LocalDate releaseDate, int duration) {
+    public Film(int id, String name, String description, LocalDate releaseDate, int duration, List<Genre> genres, Rating mpa) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+        this.genres = genres;
+        this.mpa = mpa;
     }
 
     public void setLike(int userId) {

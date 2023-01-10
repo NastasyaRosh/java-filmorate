@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,4 +15,10 @@ public class Genre {
     @NotNull
     @NotBlank
     private String name;
+
+    @Builder
+    public Genre(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 }

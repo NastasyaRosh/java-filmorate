@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -16,15 +17,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Repository
+@RequiredArgsConstructor
 public class UserDaoImpl implements UserDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public UserDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public List<User> allUsers() {
+    public List<User> getAllUsers() {
         final String sql = "SELECT * FROM USERS";
         return jdbcTemplate.query(sql, (rs, rowNum) -> userMapper(rs));
     }
@@ -58,19 +56,19 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> userById(Integer id) {
+    public Optional<User> findUserById(Integer id) {
         String sql = "SELECT * FROM USERS WHERE USER_ID = ?";
         final List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> userMapper(rs), id);
         return users.size() > 0 ? Optional.of(users.get(0)) : Optional.empty();
     }
 
     private User userMapper(ResultSet resultSet) throws SQLException {
-        User userOut = new User();
-        userOut.setId(resultSet.getInt("USER_ID"));
-        userOut.setEmail(resultSet.getString("EMAIL"));
-        userOut.setLogin(resultSet.getString("LOGIN"));
-        userOut.setName(resultSet.getString("USER_NAME"));
-        userOut.setBirthday(resultSet.getDate("BIRTHDAY").toLocalDate());
-        return userOut;
+        return User.builder()
+                .id(resultSet.getInt("USER_ID"))
+                .email(resultSet.getString("EMAIL"))
+                .login(resultSet.getString("LOGIN"))
+                .name(resultSet.getString("USER_NAME"))
+                .birthday(resultSet.getDate("BIRTHDAY").toLocalDate())
+                .build();
     }
 }

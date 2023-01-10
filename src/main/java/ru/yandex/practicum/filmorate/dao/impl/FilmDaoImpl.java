@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.dao.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
@@ -15,15 +16,12 @@ import java.sql.SQLException;
 import java.util.*;
 
 @Repository
+@RequiredArgsConstructor
 public class FilmDaoImpl implements FilmDao {
     private final JdbcTemplate jdbcTemplate;
 
-    public FilmDaoImpl(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Override
-    public List<Film> allFilms() {
+    public List<Film> getAllFilms() {
         final String sql = "SELECT * FROM FILMS" +
                 " JOIN RATING ON FILMS.RATING_ID = RATING.RATING_ID" +
                 " GROUP BY FILMS.FILM_ID";
@@ -63,7 +61,7 @@ public class FilmDaoImpl implements FilmDao {
     }
 
     @Override
-    public Optional<Film> filmById(Integer id) {
+    public Optional<Film> findFilmById(Integer id) {
         final String sql = "SELECT * FROM FILMS" +
                 " JOIN RATING ON FILMS.RATING_ID = RATING.RATING_ID" +
                 " WHERE FILMS.FILM_ID = ?";
@@ -72,17 +70,18 @@ public class FilmDaoImpl implements FilmDao {
     }
 
     private Film filmMapper(ResultSet resultSet) throws SQLException {
-        Film filmOut = new Film();
-        Rating rating = new Rating();
-        filmOut.setId(resultSet.getInt("FILM_ID"));
-        filmOut.setName(resultSet.getString("FILM_NAME"));
-        filmOut.setDescription(resultSet.getString("FILM_DESCRIPTION"));
-        filmOut.setReleaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate());
-        filmOut.setDuration(resultSet.getInt("DURATION"));
-        rating.setId(resultSet.getInt("RATING_ID"));
-        rating.setName(resultSet.getString("RATING_NAME"));
-        filmOut.setMpa(rating);
-        filmOut.setGenres(Collections.emptyList());
-        return filmOut;
+        Rating rating = Rating.builder()
+                .id(resultSet.getInt("RATING_ID"))
+                .name(resultSet.getString("RATING_NAME"))
+                .build();
+        return Film.builder()
+                .id(resultSet.getInt("FILM_ID"))
+                .name(resultSet.getString("FILM_NAME"))
+                .description(resultSet.getString("FILM_DESCRIPTION"))
+                .releaseDate(resultSet.getDate("RELEASE_DATE").toLocalDate())
+                .duration(resultSet.getInt("DURATION"))
+                .mpa(rating)
+                .genres(Collections.emptyList())
+                .build();
     }
 }

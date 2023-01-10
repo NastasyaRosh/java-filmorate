@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,24 +13,20 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
 
-    @Autowired
-    public UserController(UserService userService) {
-        this.userService = userService;
-    }
-
     @GetMapping
-    public List<User> allUsers() {
-        log.debug("Количество пользователей: " + userService.allUsers().size());
-        return userService.allUsers();
+    public List<User> getAllUsers() {
+        log.debug("Количество пользователей: " + userService.getAllUsers().size());
+        return userService.getAllUsers();
     }
 
     @GetMapping("/{id}")
-    public User userById(@PathVariable int id) throws FilmOrUserNotExist {
-        return userService.userById(id);
+    public User getUserById(@PathVariable int id) throws FilmOrUserNotExist {
+        return userService.findUserById(id);
     }
 
     @PostMapping
@@ -58,17 +54,17 @@ public class UserController {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> allFriends(@PathVariable int id) {
+    public List<User> getAllFriends(@PathVariable int id) {
         log.debug(String.format("Количество друзей у пользователя с ID = %d равно %d.",
-                id, userService.allFriends(id).size()));
-        return userService.allFriends(id);
+                id, userService.findFriendsByUserId(id).size()));
+        return userService.findFriendsByUserId(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> commonFriends(@PathVariable int id, @PathVariable int otherId) {
+    public List<User> getCommonFriends(@PathVariable int id, @PathVariable int otherId) {
         log.debug(String.format("Количество общих друзей у пользователей с ID = %d и ID = %d равно %d.",
-                id, otherId, userService.commonFriends(id, otherId).size()));
-        return userService.commonFriends(id, otherId);
+                id, otherId, userService.findCommonFriends(id, otherId).size()));
+        return userService.findCommonFriends(id, otherId);
     }
 
 }

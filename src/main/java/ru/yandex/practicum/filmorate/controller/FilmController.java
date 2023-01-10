@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -13,20 +13,16 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/films")
+@RequiredArgsConstructor
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
     private static final int DEFAULT_COUNT = 10;
 
-    @Autowired
-    public FilmController(FilmService filmService) {
-        this.filmService = filmService;
-    }
-
     @GetMapping
-    public List<Film> allFilms() {
-        log.debug("Количество фильмов: " + filmService.allFilms().size());
-        return filmService.allFilms();
+    public List<Film> getAllFilms() {
+        log.debug("Количество фильмов: " + filmService.getAllFilms().size());
+        return filmService.getAllFilms();
     }
 
     @PostMapping
@@ -42,8 +38,8 @@ public class FilmController {
     }
 
     @GetMapping("/{id}")
-    public Film filmById(@PathVariable int id) throws FilmOrUserNotExist {
-        return filmService.filmById(id);
+    public Film getFilmById(@PathVariable int id) throws FilmOrUserNotExist {
+        return filmService.findFilmById(id);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -59,12 +55,12 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> popularFilms(@RequestParam(required = false) Integer count) {
+    public List<Film> getPopularFilms(@RequestParam(required = false) Integer count) {
         log.debug(String.format("Вывод %d наиболее популярных фильмов. Всего имеется %d фильмов.",
-                count, filmService.allFilms().size()));
+                count, filmService.getAllFilms().size()));
         if (count == null) {
             count = DEFAULT_COUNT;
         }
-        return filmService.popularFilms(count);
+        return filmService.findPopularFilms(count);
     }
 }

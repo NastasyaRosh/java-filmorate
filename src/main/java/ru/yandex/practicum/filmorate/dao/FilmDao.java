@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmDao {
-    List<Film> allFilms();
+    List<Film> getAllFilms();
 
     Film addFilm(Film film);
 
     Film updateFilm(Film film);
 
-    Optional<Film> filmById(Integer id);
+    Optional<Film> findFilmById(Integer id);
 }

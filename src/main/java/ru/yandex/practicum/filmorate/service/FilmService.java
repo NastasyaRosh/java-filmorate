@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmDao;
 import ru.yandex.practicum.filmorate.dao.FilmGenreDao;
@@ -17,26 +17,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
 
-    private static final LocalDate FIRST_FILM = LocalDate.of(1895, 12, 28);
-    private static final int DEFAULT_COUNT = 10;
+    private static final LocalDate EARLIEST_FIRST_DATE = LocalDate.of(1895, 12, 28);
     private final FilmDao filmStorage;
     private final FilmGenreDao filmGenreDao;
 
     private final LikeDaoImpl likeDao;
     private final UserService userService;
 
-    @Autowired
-    public FilmService(FilmDao filmStorage, FilmGenreDao filmGenreDao, LikeDaoImpl likeDao, UserService userService) {
-        this.filmStorage = filmStorage;
-        this.filmGenreDao = filmGenreDao;
-        this.likeDao = likeDao;
-        this.userService = userService;
-    }
-
-    public List<Film> allFilms() {
-        List<Film> films = filmStorage.allFilms();
+    public List<Film> getAllFilms() {
+        List<Film> films = filmStorage.getAllFilms();
         for (Film film : films) {
             film.setGenres(filmGenreDao.findGenresByFilmId(film.getId()));
         }
@@ -59,7 +51,7 @@ public class FilmService {
 
     public Film updateFilm(Film film) throws FilmOrUserNotExist {
         validate(film);
-        Film filmOut = filmById(film.getId());
+        Film filmOut = findFilmById(film.getId());
         List<Genre> filmGenres = film.getGenres();
         filmOut = filmStorage.updateFilm(film);
         filmGenreDao.deleteFilmGenre(film.getId());
@@ -73,16 +65,16 @@ public class FilmService {
         return filmOut;
     }
 
-    public Film filmById(int id) {
-        Film filmOut = filmStorage.filmById(id).orElseThrow(() ->
+    public Film findFilmById(int id) {
+        Film filmOut = filmStorage.findFilmById(id).orElseThrow(() ->
                 new FilmOrUserNotExist(String.format("Фильм с ID %d не найден.", id)));
         filmOut.setGenres(filmGenreDao.findGenresByFilmId(id));
         return filmOut;
     }
 
     public Film setLike(int filmId, int userId) {
-        Film film = filmById(filmId);
-        User user = userService.userById(userId);
+        Film film = findFilmById(filmId);
+        User user = userService.findUserById(userId);
         if (likeDao.findUsersByLikesFilm(userId).contains(user)) {
             throw new FilmOrUserAlreadyExist("Лайк уже есть.");
         }
@@ -91,26 +83,20 @@ public class FilmService {
     }
 
     public Film deleteLike(int filmId, int userId) {
-        Film film = filmById(filmId);
-        User user = userService.userById(userId);
+        Film film = findFilmById(filmId);
+        User user = userService.findUserById(userId);
         if (!likeDao.findUsersByLikesFilm(filmId).contains(user)) {
             throw new FilmOrUserAlreadyExist("Нельзя удалить лайк, который еще не был поставлен.");
         }
         return film;
     }
 
-    public List<Film> popularFilms(Integer count) {
+    public List<Film> findPopularFilms(Integer count) {
         return likeDao.findAllPopular(count);
     }
 
-    private void checkId(int id) {
-        if (id <= 0) {
-            throw new FilmOrUserNotExist("Передан неположительный ID.");
-        }
-    }
-
     private void validate(Film film) {
-        if (film.getReleaseDate().isBefore(FIRST_FILM)) {
+        if (film.getReleaseDate().isBefore(EARLIEST_FIRST_DATE)) {
             throw new ValidationException("Неверная дата создания фильма.");
         }
     }

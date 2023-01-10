@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.GenreDao;
 import ru.yandex.practicum.filmorate.exception.FilmOrUserNotExist;
@@ -8,20 +9,16 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class GenreService {
     private final GenreDao genreDao;
 
-    public GenreService(GenreDao genreDao) {
-        this.genreDao = genreDao;
+    public List<Genre> getAllGenres() {
+        return genreDao.getAllGenres();
     }
 
-    public List<Genre> allGenres() {
-        return genreDao.allGenres();
-    }
-
-    public Genre genreById(Integer id) throws FilmOrUserNotExist {
-        Genre genreOut = genreDao.genreById(id).orElseThrow(() ->
+    public Genre findGenreById(Integer id) throws FilmOrUserNotExist {
+        return genreDao.findGenreById(id).orElseThrow(() ->
                 new FilmOrUserNotExist(String.format("Жанр с ID %d не найден.", id)));
-        return genreOut;
     }
 }

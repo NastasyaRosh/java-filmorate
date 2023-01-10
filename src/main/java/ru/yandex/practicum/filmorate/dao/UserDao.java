@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 
 public interface UserDao {
-    List<User> allUsers();
+    List<User> getAllUsers();
 
     User addUser(User user);
 
     User updateUser(User user);
 
-    Optional<User> userById(Integer id);
+    Optional<User> findUserById(Integer id);
 }
