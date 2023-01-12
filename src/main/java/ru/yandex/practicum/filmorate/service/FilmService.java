@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class FilmService {
 
-    private static final LocalDate EARLIEST_FIRST_DATE = LocalDate.of(1895, 12, 28);
+    private static final LocalDate EARLIEST_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private final FilmDao filmStorage;
     private final FilmGenreDao filmGenreDao;
 
@@ -96,7 +96,7 @@ public class FilmService {
     }
 
     private void validate(Film film) {
-        if (film.getReleaseDate().isBefore(EARLIEST_FIRST_DATE)) {
+        if (film.getReleaseDate().isBefore(EARLIEST_RELEASE_DATE)) {
             throw new ValidationException("Неверная дата создания фильма.");
         }
     }
